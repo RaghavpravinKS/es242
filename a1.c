@@ -22,42 +22,30 @@ void swap(int *a, int *b)
  * Selections should be generated in lexicographic order.
  * a[0..k-1] is the smallest selection and a[n-k..n-1] is the largest.
  */
-void generate_selections(int a[], int n, int k, int b[], void *data, void (*process_selection)(int *b, int k, void *data))
+void process_selection(int *b, int k, void *data)
 {
-        int temp[k];
-    int first = a[start];
-    temp[0] = first;
-    int con = 1;
-    for (int i = start+1; i < n; ++i)
+
+}
+
+void generate_combination(int a[], int b[], int start, int end,
+                    int ind, int k,void *data,void (*process_selection)(int *b, int k, void *data))
+{
+    if (ind == k)
     {
-        temp[con] = a[i];
-        con += 1;
-        if (sizeof(temp) == k)
-        {
-            print_array(temp,k);
-            break;
-        }
-    }
-    if (start == (n-k+1))
-    {
+        process_selection(b, k, data);
         return;
     }
-    else
+
+    for (int i=start; i<=end && end-i+1 >= k-ind; i++)
     {
-        lex(a, n, start+1, k);
+        b[ind] = a[i];
+        generate_combination(a, b, i+1, end, ind+1, k,data,process_selection);
     }
-    // b[0] = 2; b[1] = 1;
-    // process_selection(b, 2, data);
-    // b[0] = 2; b[1] = 6;
-    // process_selection(b, 2, data);
-    // b[0] = 2; b[1] = 5;
-    // process_selection(b, 2, data);
-    // b[0] = 1; b[1] = 6;
-    // process_selection(b, 2, data);
-    // b[0] = 1; b[1] = 5;
-    // process_selection(b, 2, data);
-    // b[0] = 6; b[1] = 5;
-    // process_selection(b, 2, data);
+}
+
+void generate_selections(int a[], int n, int k, int b[], void *data, void (*process_selection)(int *b, int k, void *data))
+{   
+    generate_combination(a, b, 0, n-1, 0, k,data,process_selection);
 }
 
 /*
@@ -92,32 +80,20 @@ void previous_permutation(int a[], int n)
     int index;
     int is_first = 1;
     for (int i = n-1; i > 0; i--){
-        print_array(a,n);
-        printf("%d\n",i);
         if (a[i-1]>a[i]){
-            printf("A\n");
             // print_array(a,n);
             if (i==n-1){
-                printf("n-1");
-                printf("%d\n",i);
                 swap(&a[i-1], &a[i]);
                 // print_array(a,n);
                 return;
             }
-            printf("B\n");
             for (int j = i; j < n; j++){
-                printf("C\n");
-                print_array(a,n);
                 if (a[j]<a[i - 1] && a[j]>=a[i]){
                     // print_array(a,n);
-                    printf("J");
                     tmp = j;
                 };
             };
-            printf("D\n");
             swap(&a[i-1], &a[tmp]);
-            printf("E\n");
-            print_array(a,n);
             index = i;
             is_first = 0;
             break;
@@ -126,7 +102,6 @@ void previous_permutation(int a[], int n)
         //     return;
         // };
     };
-    printf("%d\n",is_first);
     if (is_first==1){
         return;
     }
@@ -137,7 +112,6 @@ void previous_permutation(int a[], int n)
         k++;
         m--;
     };
-    print_array(a,n);
 }
 
 /* Write your tests here. Use the previous assignment for reference. */
@@ -270,7 +244,6 @@ BEGIN_TEST(previous_permutation) {
     int a[] = { 4,9,3,2,3,1};
     previous_permutation(a, 6);
     ASSERT_ARRAY_VALUES_EQ(a, 6, "Failed on 1 5 6 2 3 4.", 4,9,3,2,1,3);
-    print_array(a,6);
     int aa[] = { 3,2,1};
     previous_permutation(aa, 3); // 3 is correct.
     ASSERT_ARRAY_VALUES_EQ(aa, 3, "Failed on 1 2 3.", 3,1,2);
