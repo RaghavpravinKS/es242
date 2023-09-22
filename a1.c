@@ -1,7 +1,19 @@
 #include "test.h"
 
 #include <string.h> // for testing generate_splits()
-
+void print_array(int a[], int n)
+{
+    for (int i = 0; i < n; ++i) {
+        printf("%d ", a[i]);
+    }
+    printf("\n");
+}
+void swap(int *a, int *b)
+{
+    int t = *a;
+    *a = *b;
+    *b = t;
+}
 /*
  * Generate k-selections of a[0..n-1] in lexicographic order and call process_selection to process them.
  *
@@ -48,12 +60,62 @@ void generate_splits(const char *source, const char *dictionary[], int nwords, c
  */
 void previous_permutation(int a[], int n)
 {
-    a[0] = 1;
-    a[1] = 5;
-    a[2] = 4;
-    a[3] = 6;
-    a[4] = 3;
-    a[5] = 2;
+    // a[0] = 1;
+    // a[1] = 5;
+    // a[2] = 4;
+    // a[3] = 6;
+    // a[4] = 3;
+    // a[5] = 2;
+    int tmp;
+    int index;
+    int is_first = 1;
+    for (int i = n-1; i > 0; i--){
+        print_array(a,n);
+        printf("%d\n",i);
+        if (a[i-1]>a[i]){
+            printf("A\n");
+            // print_array(a,n);
+            if (i==n-1){
+                printf("n-1");
+                printf("%d\n",i);
+                swap(&a[i-1], &a[i]);
+                // print_array(a,n);
+                return;
+            }
+            printf("B\n");
+            for (int j = i; j < n; j++){
+                printf("C\n");
+                print_array(a,n);
+                if (a[j]<a[i - 1] && a[j]>=a[i]){
+                    // print_array(a,n);
+                    printf("J");
+                    tmp = j;
+                };
+            };
+            printf("D\n");
+            swap(&a[i-1], &a[tmp]);
+            printf("E\n");
+            print_array(a,n);
+            index = i;
+            is_first = 0;
+            break;
+        }
+        // else{
+        //     return;
+        // };
+    };
+    printf("%d\n",is_first);
+    if (is_first==1){
+        return;
+    }
+    int k = index;
+    int m = n-1;
+    while (k<m){
+        swap(&a[m], &a[k]);
+        k++;
+        m--;
+    };
+    print_array(a,n);
 }
 
 /* Write your tests here. Use the previous assignment for reference. */
@@ -183,12 +245,13 @@ BEGIN_TEST(generate_splits) {
 } END_TEST
 
 BEGIN_TEST(previous_permutation) {
-    int a[] = { 1, 5, 6, 2, 3, 4 };
+    int a[] = { 4,9,3,2,3,1};
     previous_permutation(a, 6);
-    ASSERT_ARRAY_VALUES_EQ(a, 6, "Failed on 1 5 6 2 3 4.", 1, 5, 4, 6, 3, 2);
-    int aa[] = { 1, 2, 3, 5, 4, 6 };
+    ASSERT_ARRAY_VALUES_EQ(a, 6, "Failed on 1 5 6 2 3 4.", 4,9,3,2,1,3);
+    print_array(a,6);
+    int aa[] = { 3,2,1};
     previous_permutation(aa, 3); // 3 is correct.
-    ASSERT_ARRAY_VALUES_EQ(aa, 3, "Failed on 1 2 3.", 1, 2, 3);
+    ASSERT_ARRAY_VALUES_EQ(aa, 3, "Failed on 1 2 3.", 3,1,2);
 } END_TEST
 
 int main()
@@ -201,3 +264,21 @@ int main()
         });
     return 0;
 }
+
+// 3 4 1 2 9 3
+// 3 4 1 3 2 9
+// 4 9 3 2 1 3 
+// 4 9 3 2 3 1 
+// 4 9 3 3 1 2 
+// 4 9 3 3 2 1 
+// 9 1 2 3 3 4 
+// 9 1 2 3 4 3 
+// 9 1 2 4 3 3 
+// 9 1 3 2 3 4 
+// 9 1 3 2 4 3 
+// 9 1 3 3 2 4 
+// 9 1 3 3 4 2 
+// 9 1 3 4 2 3 
+// 9 1 3 4 3 2 
+// 9 1 4 2 3 3 
+// 9 1 4 3 2 3
