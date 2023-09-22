@@ -24,18 +24,40 @@ void swap(int *a, int *b)
  */
 void generate_selections(int a[], int n, int k, int b[], void *data, void (*process_selection)(int *b, int k, void *data))
 {
-    b[0] = 2; b[1] = 1;
-    process_selection(b, 2, data);
-    b[0] = 2; b[1] = 6;
-    process_selection(b, 2, data);
-    b[0] = 2; b[1] = 5;
-    process_selection(b, 2, data);
-    b[0] = 1; b[1] = 6;
-    process_selection(b, 2, data);
-    b[0] = 1; b[1] = 5;
-    process_selection(b, 2, data);
-    b[0] = 6; b[1] = 5;
-    process_selection(b, 2, data);
+        int temp[k];
+    int first = a[start];
+    temp[0] = first;
+    int con = 1;
+    for (int i = start+1; i < n; ++i)
+    {
+        temp[con] = a[i];
+        con += 1;
+        if (sizeof(temp) == k)
+        {
+            print_array(temp,k);
+            break;
+        }
+    }
+    if (start == (n-k+1))
+    {
+        return;
+    }
+    else
+    {
+        lex(a, n, start+1, k);
+    }
+    // b[0] = 2; b[1] = 1;
+    // process_selection(b, 2, data);
+    // b[0] = 2; b[1] = 6;
+    // process_selection(b, 2, data);
+    // b[0] = 2; b[1] = 5;
+    // process_selection(b, 2, data);
+    // b[0] = 1; b[1] = 6;
+    // process_selection(b, 2, data);
+    // b[0] = 1; b[1] = 5;
+    // process_selection(b, 2, data);
+    // b[0] = 6; b[1] = 5;
+    // process_selection(b, 2, data);
 }
 
 /*
