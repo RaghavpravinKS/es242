@@ -60,18 +60,14 @@ void generate_selections(int a[], int n, int k, int b[], void *data, void (*proc
 void generate_splits_recursive(const char *source, const char *dictionary[], int nwords, char buf[], int buf_index, int source_index, void *data, void (*process_split)(char buf[], void *data))
 {
     if (source_index == strlen(source)) {
-        // We have reached the end of the source string
-        buf[buf_index] = '\0'; // Null-terminate the buffer
-
-        process_split(buf, data); // Process the split
+        buf[buf_index] = '\0'; 
+        process_split(buf, data); 
     } else {
-        // Try to add each word from the dictionary to the buffer
         for (int i = 0; i < nwords; i++) {
             const char *word = dictionary[i];
             int word_length = strlen(word);
 
-            if (strncmp(source + source_index, word, word_length) == 0) {
-                // Word matches at the current position in the source string
+            if (strncmp(source + source_index, word, word_length) == 0) {              
                 if (buf_index == 0) {
                 strcpy(buf, word);
                 generate_splits_recursive(source, dictionary, nwords, buf, buf_index + word_length, source_index + word_length, data, process_split);
