@@ -112,7 +112,7 @@ vector<int> down(vector<int>& board) {
     if (!(index == 0 || index == 1 || index == 2)) {
         int i = board[index-3];
         if (i == 5){
-            i = 2;
+            i = 3;
         }
         else {
             i = vert[(i + 1) % 4];
@@ -132,7 +132,7 @@ vector<int> down(vector<int>& board) {
 vector<Direction> findPath(vector<int> src) {
 
     vector<int> dest = {1,1,1,1,6,1,1,1,1};
-    const int max_size = static_cast<int>(pow(7, 5));
+    const int max_size = static_cast<int>(pow(7, 9));
     cout << max_size << endl;
     queue<vector<int>, max_size> q;
 
