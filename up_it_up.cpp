@@ -66,7 +66,11 @@ vector<int> left(vector<int>& board) {
     vector<int> o = board;
     o[index+1] = 6;
     o[index] = i;
-
+    cout << "Board: " << endl;
+    printBoard(board);
+    cout << endl;
+    printBoard(o);
+    cout << endl;
     return o;
 }
 
@@ -100,7 +104,7 @@ vector<int> up(vector<int>& board) {
     if (i == 5){
         i = 1;
     }
-    else{
+    else if (i == 4 || i == 1 || i == 3){
         i = vert[(i - 1 + 4) % 4];
     }
     vector<int> o = board;
@@ -121,7 +125,7 @@ vector<int> down(vector<int>& board) {
     if (i == 5){
         i = 3;
     }
-    else {
+    else if (i == 4 || i == 1 || i == 3) {
         i = vert[(i + 1) % 4];
     }
     vector<int> o = board;
@@ -140,11 +144,10 @@ vector<Direction> findPath(const vector<int>& src) {
     queue<vector<int>, max_size> q;
 
     Direction visited[max_size];
-    vector<int> parent[max_size];
 
 
     enqueue(q, src);
-    visited[ord(src)] = LEFT;
+    visited[ord(src)] = RIGHT;
 
     cout << endl;
 
@@ -158,7 +161,18 @@ vector<Direction> findPath(const vector<int>& src) {
             int o = ord(c);
             while (!(c == src)) {
                 moves.push_back(visited[o]);
-                c = parent[o];
+                if (visited[o] == UP) {
+                    c = down(c);
+                }
+                else if (visited[o] == DOWN) {
+                    c = up(c);
+                }
+                else if (visited[o] == LEFT) {
+                    c = right(c);
+                }
+                else if (visited[o] == RIGHT) {
+                    c = left(c);
+                }
                 o = ord(c);
             }
             reverse(moves.begin(), moves.end());
@@ -178,28 +192,24 @@ vector<Direction> findPath(const vector<int>& src) {
 
         if (!visited[aord]) {
             visited[aord] = UP;
-            parent[aord] = u;
             enqueue(q, a);
         }
 
 
         if (!visited[bord]) {
             visited[bord] = DOWN;
-            parent[bord] = u;
             enqueue(q, b);
         }
 
 
         if (!visited[cord]) {
             visited[cord] = LEFT;
-            parent[cord] = u;
             enqueue(q, c);
         }
 
 
         if (!visited[dord]) {
             visited[dord] = RIGHT;
-            parent[dord] = u;
             enqueue(q, d);
         }
     }
@@ -264,3 +274,26 @@ int main() {
 
     return 0;
 }
+
+
+/*
+INDEXING OF CUBE FACES:
+0: Left, 1: Front, 2: Right, 3: Back, 4: Top, 5: Bottom, 6: None
+For each of the 9 positions in the board, enter the face index of the IITGN logo in the cube in that position. If empty, enter 6.
+Cube 1: 0
+Cube 2: 2
+Cube 3: 1
+Cube 4: 5
+Cube 5: 4
+Cube 6: 6
+Cube 7: 1
+Cube 8: 0
+Cube 9: 5
+Initialized the board configuration:
+0 2 1
+5 4 6
+1 0 5
+
+Path found!
+Path: U R D D R U L
+*/
