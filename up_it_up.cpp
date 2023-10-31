@@ -1,5 +1,9 @@
 #include <iostream>
 #include <vector>
+#include "queue.hpp"
+#include <cassert>
+#include <cmath>
+#include <algorithm>
 
 using namespace std;
 
@@ -8,6 +12,18 @@ vector<int> vert = {4, 1, 5, 3};
 
 enum Direction { LEFT, RIGHT, UP, DOWN };
 
+
+// Function to convert a board configuration to a unique identifier in base 7
+int ord(const vector<int>& board) {
+    int uniqueIdentifier = 0;
+    int base = 1; // Base 7
+    for (int i = board.size() - 1; i >= 0; --i) {
+        uniqueIdentifier += (board[i] * base);
+        base *= 7;
+        cout << endl << uniqueIdentifier;
+    }
+    return uniqueIdentifier;
+}
 
 // Function to print the board configuration in 3x3 format
 void printBoard(const vector<int>& board) {
@@ -20,34 +36,6 @@ void printBoard(const vector<int>& board) {
     }
 }
 
-
-int left(int i) {
-    if (i >= 0 && i <= 3) {
-        i = (i - 1 + 4) % 4;
-    }
-    return i;
-}
-
-
-int right(int i) {
-    if (i >= 0 && i <= 3) {
-        i = (i + 1) % 4;
-    }
-    return i;
-}
-
-
-int up(int i) {
-    i = vert[(i - 1 + 4) % 4];
-    return i;
-}
-
-
-int down(int i) {
-    i = vert[(i + 1) % 4];
-    return i;
-}
-
 int findIndex(const vector<int>& board, int value) {
     for (int i = 0; i < 9; ++i) {
         if (board[i] == value) {
@@ -57,39 +45,171 @@ int findIndex(const vector<int>& board, int value) {
     return -1; // Value not found in the board
 }
 
-vector<Direction> findPath(vector<int> board, vector<Direction> path) {
-    if (board == {1,1,1,1,6,1,1,1,1}){
-        return path;
-    }
 
-    int bi = findIndex(board, 6);
+vector<int> left(vector<int>& board) {
+    int index = findIndex(board, 6);
 
-    if (bi == -1) {
-        cout << "Target value not found in the board." << endl;
-        return path;
-    }
-
-
-    int child_indices[4] = [bi-1, bi+1, bi-3, bi+3];
-    int rotated_indices[4] = {left(board[bi+1]), right(board[bi-1]), down(board[bi-3]), up(board[bi+3])};
-
-    for (int j = 0; j < 4; ++j) {
-        if (0 <= child_indices[j] && child_indices[j] << 8 ) {
-            path.push_back(static_cast<Direction>(j));
-            board[bi] = rotated_indices[j];
-            board[child_indices[j] = 6;
-
-            return findPath(board, path);
-
-
-            // Undo the move
-            board[moves[j]] = board[i];
-            board[i] = 6;
-            path.pop_back();
+    if (!(index == 2 || index == 5 || index == 8)) {
+        int i = board[index+1];
+        if (i >= 0 && i <= 3) {
+            i = (i - 1 + 4) % 4;
         }
+
+        board[index+1] = 6;
+        board[index] = i;
+
+        return board;
+    }
+    else {
+        return {0};
+    }
+}
+
+
+vector<int> right(vector<int>& board) {
+    int index = findIndex(board, 6);
+    if (!(index == 0 || index == 3 || index == 6)) {
+        int i = board[index-1];
+        if (i >= 0 && i <= 3) {
+            i = (i + 1) % 4;
+        }
+        board[index-1] = 6;
+        board[index] = i;
+
+        return board;
+    }
+    else {
+        return {0};
+    }
+}
+
+
+vector<int> up(vector<int>& board) {
+
+    int index = findIndex(board, 6);
+    if (!(index == 6 || index == 7 || index == 8)) {
+        int i = board[index+3];
+        if (i == 5){
+            i = 1;
+        }
+        else{
+            i = vert[(i - 1 + 4) % 4];
+        }
+        board[index+3] = 6;
+        board[index] = i;
+
+    return board;
+    }
+    else {
+        return {0};
+    }
+}
+
+
+vector<int> down(vector<int>& board) {
+
+    int index = findIndex(board, 6);
+    if (!(index == 0 || index == 1 || index == 2)) {
+        int i = board[index-3];
+        if (i == 5){
+            i = 2;
+        }
+        else {
+            i = vert[(i + 1) % 4];
+        }
+        board[index-3] = 6;
+        board[index] = i;
+
+    return board;
+    }
+    else {
+        return {0};
     }
 
-    return path;
+}
+
+
+vector<Direction> findPath(vector<int> src) {
+
+    vector<int> dest = {1,1,1,1,6,1,1,1,1};
+    const int max_size = static_cast<int>(pow(7, 5));
+    cout << max_size << endl;
+    queue<vector<int>, max_size> q;
+
+    Direction visited[max_size];
+    vector<int> parent[max_size];
+
+
+    enqueue(q, src);
+    visited[ord(src)] = LEFT;
+
+    printBoard(src);
+
+
+    while (!(q.len == 0)) {
+        vector<int> u = dequeue(q);
+        printBoard(u);
+        if (u == dest) {
+            /* return the moves to get to u from src. */
+            vector<Direction> moves;
+            vector<int> c = u;
+            int o = ord(c);
+            while (!(c == src)) {
+                moves.push_back(visited[o]);
+                c = parent[o];
+                o = ord(c);
+            }
+            reverse(moves.begin(), moves.end());
+            return moves;
+        }
+
+        int index = findIndex(u, 6);
+
+        vector<int> a = up(u);
+        vector<int> b = down(u);
+        vector<int> c = left(u);
+        vector<int> d = right(u);
+
+        vector<int> err = {0};
+        if (!(a == err)){
+            int aord = ord(a);
+            if (!visited[aord]) {
+                visited[aord] = UP;
+                parent[aord] = u;
+                enqueue(q, a);
+            }
+        }
+
+        if (!(b == err)){
+            int bord = ord(b);
+            if (!visited[bord]) {
+                visited[bord] = DOWN;
+                parent[bord] = u;
+                enqueue(q, b);
+            }
+        }
+
+        if (!(c == err)){
+            int cord = ord(c);
+            if (!visited[cord]) {
+                visited[cord] = LEFT;
+                parent[cord] = u;
+                enqueue(q, c);
+            }
+        }
+
+        if (!(d == err)){
+            int dord = ord(d);
+            if (!visited[dord]) {
+                visited[dord] = RIGHT;
+                parent[dord] = u;
+                enqueue(q, d);
+            }
+        }
+
+    }
+    assert(0);
+
 }
 
 
@@ -117,14 +237,13 @@ int main() {
     cout << "Initialized the board configuration:" << endl;
     printBoard(board);
 
-    // Vector to store the movement directions (L, R, U, D)
-    vector<Direction> path;
+
 
     // Find the path and modify the board configuration
-    bool pathFound = findPath(board, path, startIndex);
+    vector<Direction> path = findPath(board);
 
     // Output the modified board and path
-    if (pathFound) {
+    if (true) {
         cout << "Path found! Modified Board Configuration:" << endl;
         printBoard(board);
 
