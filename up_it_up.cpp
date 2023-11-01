@@ -139,23 +139,27 @@ void performMoves(vector<int>& board, const string& moves) {
     for (char move : moves) {
         switch (move) {
             case 'L':
+                cout << "Move LEFT\n" << endl;
                 board = left(board);
                 printBoard(board);
                 break;
             case 'R':
+                cout << "Move RIGHT\n" << endl;
                 board = right(board);
                 printBoard(board);
                 break;
             case 'U':
+                cout << "Move UP\n" << endl;
                 board = up(board);
                 printBoard(board);
                 break;
             case 'D':
+                cout << "Move DOWN\n" << endl;
                 board = down(board);
                 printBoard(board);
                 break;
             default:
-                cout << "Invalid move: " << move << endl;
+                // cout << "Invalid move: " << move << endl;
                 // Handle invalid move if needed
                 break;
         }
@@ -174,6 +178,7 @@ vector<Direction> findPath(const vector<int>& src) {
     enqueue(q, src);
     visited[ord(src)] = LEFT;
 
+    cout << "Processing..." << endl;
     cout << endl;
 
     while (!(q.len == 0)) {
@@ -282,26 +287,31 @@ int main() {
         cout << "No path found." << endl;
     }
     else {
-        cout << "Path found!" << endl;
 
-        cout << "Path: ";
+        cout << "Path found!" << endl;
+        string path_seq;
+
         for (const auto& direction : path) {
             switch (direction) {
                 case LEFT:
-                    cout << "L ";
+                    path_seq = path_seq + "L ";
                     break;
                 case RIGHT:
-                    cout << "R ";
+                    path_seq = path_seq + "R ";
                     break;
                 case UP:
-                    cout << "U ";
+                    path_seq = path_seq + "U ";
                     break;
                 case DOWN:
-                    cout << "D ";
+                    path_seq = path_seq + "D ";
                     break;
             }
+
         }
+
         cout << endl;
+        performMoves(board, path_seq);
+        cout << "Path: " << path_seq << endl;
     }
 
     return 0;
@@ -375,5 +385,248 @@ Initialized the board configuration:
 
 
 Path found!
+Path: U L D R U R D L D R U L D L U U R D R U L D L U R D R U L L D R R D L U
+*/
+
+
+/*
+INDEXING OF CUBE FACES:
+0: Left, 1: Front, 2: Right, 3: Back, 4: Top, 5: Bottom, 6: None
+For each of the 9 positions in the board, enter the face index of the IITGN logo in the cube in that position. If empty, enter 6.
+Cube 1: 3
+Cube 2: 3
+Cube 3: 3
+Cube 4: 3
+Cube 5: 6
+Cube 6: 3
+Cube 7: 3
+Cube 8: 3
+Cube 9: 3
+
+Initialized the board configuration:
+3 3 3
+3 6 3
+3 3 3
+
+Processing...
+
+Path found!
+
+Move UP
+
+3 3 3
+3 5 3
+3 6 3
+
+Move LEFT
+
+3 3 3
+3 5 3
+3 2 6
+
+Move DOWN
+
+3 3 3
+3 5 6
+3 2 4
+
+Move RIGHT
+
+3 3 3
+3 6 5
+3 2 4
+
+Move UP
+
+3 3 3
+3 2 5
+3 6 4
+
+Move RIGHT
+
+3 3 3
+3 2 5
+6 0 4
+
+Move DOWN
+
+3 3 3
+6 2 5
+4 0 4
+
+Move LEFT
+
+3 3 3
+1 6 5
+4 0 4
+
+Move DOWN
+
+3 6 3
+1 4 5
+4 0 4
+
+Move RIGHT
+
+6 0 3
+1 4 5
+4 0 4
+
+Move UP
+
+4 0 3
+6 4 5
+4 0 4
+
+Move LEFT
+
+4 0 3
+4 6 5
+4 0 4
+
+Move DOWN
+
+4 6 3
+4 0 5
+4 0 4
+
+Move LEFT
+
+4 2 6
+4 0 5
+4 0 4
+
+Move UP
+
+4 2 1
+4 0 6
+4 0 4
+
+Move UP
+
+4 2 1
+4 0 3
+4 0 6
+
+Move RIGHT
+
+4 2 1
+4 0 3
+4 6 1
+
+Move DOWN
+
+4 2 1
+4 6 3
+4 0 1
+
+Move RIGHT
+
+4 2 1
+6 4 3
+4 0 1
+
+Move UP
+
+4 2 1
+3 4 3
+6 0 1
+
+Move LEFT
+
+4 2 1
+3 4 3
+3 6 1
+
+Move DOWN
+
+4 2 1
+3 6 3
+3 1 1
+
+Move LEFT
+
+4 2 1
+3 2 6
+3 1 1
+
+Move UP
+
+4 2 1
+3 2 4
+3 1 6
+
+Move RIGHT
+
+4 2 1
+3 2 4
+3 6 2
+
+Move DOWN
+
+4 2 1
+3 6 4
+3 2 2
+
+Move RIGHT
+
+4 2 1
+6 0 4
+3 2 2
+
+Move UP
+
+4 2 1
+5 0 4
+6 2 2
+
+Move LEFT
+
+4 2 1
+5 0 4
+1 6 2
+
+Move LEFT
+
+4 2 1
+5 0 4
+1 1 6
+
+Move DOWN
+
+4 2 1
+5 0 6
+1 1 1
+
+Move RIGHT
+
+4 2 1
+5 6 1
+1 1 1
+
+Move RIGHT
+
+4 2 1
+6 5 1
+1 1 1
+
+Move DOWN
+
+6 2 1
+1 5 1
+1 1 1
+
+Move LEFT
+
+1 6 1
+1 5 1
+1 1 1
+
+Move UP
+
+1 1 1
+1 6 1
+1 1 1
+
 Path: U L D R U R D L D R U L D L U U R D R U L D L U R D R U L L D R R D L U
 */
