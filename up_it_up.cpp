@@ -10,7 +10,7 @@ using namespace std;
 
 vector<int> vert = {4, 1, 5, 3};
 
-enum Direction { LEFT, RIGHT, UP, DOWN };
+enum Direction { LEFT = 1, RIGHT = 2, UP = 3, DOWN = 4};
 
 
 int findIndex(const vector<int>& board, int value) {
@@ -66,11 +66,7 @@ vector<int> left(vector<int>& board) {
     vector<int> o = board;
     o[index+1] = 6;
     o[index] = i;
-    cout << "Board: " << endl;
-    printBoard(board);
-    cout << endl;
-    printBoard(o);
-    cout << endl;
+
     return o;
 }
 
@@ -145,9 +141,8 @@ vector<Direction> findPath(const vector<int>& src) {
 
     Direction visited[max_size];
 
-
     enqueue(q, src);
-    visited[ord(src)] = RIGHT;
+    visited[ord(src)] = UP;
 
     cout << endl;
 
@@ -161,6 +156,7 @@ vector<Direction> findPath(const vector<int>& src) {
             int o = ord(c);
             while (!(c == src)) {
                 moves.push_back(visited[o]);
+
                 if (visited[o] == UP) {
                     c = down(c);
                 }
@@ -178,7 +174,6 @@ vector<Direction> findPath(const vector<int>& src) {
             reverse(moves.begin(), moves.end());
             return moves;
         }
-
 
         vector<int> a = up(u);
         vector<int> b = down(u);
@@ -212,6 +207,7 @@ vector<Direction> findPath(const vector<int>& src) {
             visited[dord] = RIGHT;
             enqueue(q, d);
         }
+
     }
     assert(0);
 
