@@ -4,6 +4,7 @@
 #include <cassert>
 #include <cmath>
 #include <algorithm>
+#include <string>
 
 using namespace std;
 
@@ -48,6 +49,7 @@ void printBoard(const vector<int>& board) {
             cout << endl;
         }
     }
+    cout << endl;
 }
 
 
@@ -133,16 +135,44 @@ vector<int> down(vector<int>& board) {
 }
 
 
+void performMoves(vector<int>& board, const string& moves) {
+    for (char move : moves) {
+        switch (move) {
+            case 'L':
+                board = left(board);
+                printBoard(board);
+                break;
+            case 'R':
+                board = right(board);
+                printBoard(board);
+                break;
+            case 'U':
+                board = up(board);
+                printBoard(board);
+                break;
+            case 'D':
+                board = down(board);
+                printBoard(board);
+                break;
+            default:
+                cout << "Invalid move: " << move << endl;
+                // Handle invalid move if needed
+                break;
+        }
+    }
+}
+
+
 vector<Direction> findPath(const vector<int>& src) {
 
-    const vector<int> dest = {1,1,1,1,6,1,1,1,1};
+    const vector<int> dest = {1, 1, 1, 1, 6, 1, 1, 1, 1};
     const int max_size = static_cast<int>(9 * pow(6, 8));
     queue<vector<int>, max_size> q;
 
     Direction visited[max_size];
 
     enqueue(q, src);
-    visited[ord(src)] = UP;
+    visited[ord(src)] = LEFT;
 
     cout << endl;
 
@@ -185,31 +215,36 @@ vector<Direction> findPath(const vector<int>& src) {
         int cord = ord(c);
         int dord = ord(d);
 
+
         if (!visited[aord]) {
             visited[aord] = UP;
             enqueue(q, a);
+            // printBoard(a);
         }
 
 
         if (!visited[bord]) {
             visited[bord] = DOWN;
             enqueue(q, b);
+            // printBoard(b);
         }
 
 
         if (!visited[cord]) {
             visited[cord] = LEFT;
             enqueue(q, c);
+            // printBoard(c);
         }
 
 
         if (!visited[dord]) {
             visited[dord] = RIGHT;
             enqueue(q, d);
+            // printBoard(d);
         }
 
     }
-    assert(0);
+    return vector<Direction> {LEFT, RIGHT, UP, DOWN};
 
 }
 
@@ -235,15 +270,18 @@ int main() {
     }
 
     // Print the initialized board
-    cout << "Initialized the board configuration:" << endl;
+    cout << "\nInitialized the board configuration:" << endl;
     printBoard(board);
 
 
     // Find the path
     vector<Direction> path = findPath(board);
 
-    // Output the path
-    if (true) {
+    // Output the path if path exists. Trivial path is outputted by findPath if no path exists.
+    if (path == vector<Direction> {LEFT, RIGHT, UP, DOWN}) {
+        cout << "No path found." << endl;
+    }
+    else {
         cout << "Path found!" << endl;
 
         cout << "Path: ";
@@ -264,8 +302,6 @@ int main() {
             }
         }
         cout << endl;
-    } else {
-        cout << "No path found." << endl;
     }
 
     return 0;
@@ -292,4 +328,52 @@ Initialized the board configuration:
 
 Path found!
 Path: U R D D R U L
+*/
+
+
+/*
+INDEXING OF CUBE FACES:
+0: Left, 1: Front, 2: Right, 3: Back, 4: Top, 5: Bottom, 6: None
+For each of the 9 positions in the board, enter the face index of the IITGN logo in the cube in that position. If empty, enter 6.
+Cube 1: 0
+Cube 2: 0
+Cube 3: 0
+Cube 4: 6
+Cube 5: 1
+Cube 6: 1
+Cube 7: 1
+Cube 8: 1
+Cube 9: 1
+Initialized the board configuration:
+0 0 0
+6 1 1
+1 1 1
+
+Path found!
+Path: U L D D R U U L D D L U R R U L D R U L D D R U U L D L D R U
+*/
+
+/*
+CCL Example Demonstration:
+
+INDEXING OF CUBE FACES:
+0: Left, 1: Front, 2: Right, 3: Back, 4: Top, 5: Bottom, 6: None
+For each of the 9 positions in the board, enter the face index of the IITGN logo in the cube in that position. If empty, enter 6.
+Cube 1: 3
+Cube 2: 3
+Cube 3: 3
+Cube 4: 3
+Cube 5: 6
+Cube 6: 3
+Cube 7: 3
+Cube 8: 3
+Cube 9: 3
+Initialized the board configuration:
+3 3 3
+3 6 3
+3 3 3
+
+
+Path found!
+Path: U L D R U R D L D R U L D L U U R D R U L D L U R D R U L L D R R D L U
 */
