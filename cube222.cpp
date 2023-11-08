@@ -4,9 +4,7 @@
 #include <cassert>
 #include <cmath>
 #include <algorithm>
-#include <unordered_map>
-#include <set>
-// #include<queue>
+
 using namespace std;
 
 char solved_cube[2][4][3] = {
@@ -52,7 +50,41 @@ long long ord(const cube& s)
         }
     }
 
-    return a;
+    return a % 500007;
+}
+
+struct cube_det
+{
+    cube parent ;
+    string move ;
+    int visited = 0 ;
+    int ord_ = -1;
+    cube state ;
+};
+
+bool same(const cube& s, cube& h){
+    for (int r = 0; r < 2; ++r) {
+        for (int c = 0; c < 4; ++c) {
+            for (int e = 0; e < 3; ++e){
+                if (s.b[r][c][e] != h.b[r][c][e]){
+                    return false;
+                }
+            }
+        }
+    }
+    return true;
+}
+
+vector<vector<cube_det>> hash_table(500010);
+
+cube_det hash_function(int ord_a,const cube& c) {
+    auto a = hash_table[ord_a];
+
+    for (int i = 0 ; i < a.size() ; i ++){
+        if (same(c,a[i].state)){return a[i] ;}
+    }
+
+    return {c,"", 0, -1};
 }
 
 void read_cube(cube& s)
@@ -326,163 +358,30 @@ bool is_solved(const cube &s)
     }
 }
 
-/*
-string to_string(const cube& s) {
-    string st = "";
-    for (int r = 0; r < 2; ++r) {
-        for (int c = 0; c < 4; ++c) {
-            for (int e = 0; e < 3; ++e){
-                    st += s.b[r][c][e];
-            }
-        }
-    }
-    return st;
-}
-*/
-bool same(const cube& s, cube& h){
-    for (int r = 0; r < 2; ++r) {
-        for (int c = 0; c < 4; ++c) {
-            for (int e = 0; e < 3; ++e){
-                if (s.b[r][c][e] != h.b[r][c][e]){
-                    return false;
-                }
-            }
-        }
-    }
-    return true;
-}
-/*
-vector<string> solve(const cube& s)
-{
-    queue<cube, fact(10)> q;
-    map <string , int> visited;
-    cube c = s;
-    enqueue(q, c);
-    visited[to_string(c)] = 1;
-
-    map <string , cube> parent;
-    map <string , string> move;
+vector<string> solve(const cube& s){
+    queue<cube, fact(10)> q ;
+    cube c = s ;
+    enqueue(q, c) ;
+    int c_ord = ord(c) ;
+    hash_table[c_ord].push_back(cube_det{c, "", 1,c_ord,c}) ;
 
     while (q.len != 0) {
         cube u = dequeue(q);
-
         if (is_solved(u)){
-            vector<string> moves;
-            cube t = u;
-            string o = to_string(t);
-            while (!same(s,t)){
-                moves.push_back(move[o]);
-                t = parent[o];
-                o = to_string(t);
+            vector<string> moves ;
+            cube c_ = u ;
+            int c_s = ord(c_) ;
+            auto store = hash_function(c_s,c_) ;
+            while (!same(s,c_)){
+                moves.push_back(store.move) ;
+                c_ = store.parent ;
+                c_s = ord(c_) ;
+                store = hash_function(c_s,c_) ;
             }
-            reverse(moves.begin(),moves.end());
-            return moves;
+            reverse(moves.begin(),moves.end()) ;
+            return moves ;
 
         }
-
-        cube R = right(u);
-        cube U = up(u);
-        cube F = front(u);
-        cube R1 = right1(u);
-        cube U1 = up1(u);
-        cube F1 = front1(u);
-        cube R2 = right2(u);
-        cube U2 = up2(u);
-        cube F2 = front2(u);
-        
-        string s_R = to_string(right(u));
-        string s_U = to_string(up(u));
-        string s_F = to_string(front(u));
-        string s_R1 = to_string(right1(u));
-        string s_U1 = to_string(up1(u));
-        string s_F1 = to_string(front1(u));
-        string s_R2 = to_string(right2(u));
-        string s_U2 = to_string(up2(u));
-        string s_F2 = to_string(front2(u));
-        
-        if (!visited[s_R]){
-            visited[s_R] = 1;
-            move[s_R] = "R";
-            parent[s_R] = u;
-            enqueue(q, R);
-        }
-        if (!visited[s_U]){
-            visited[s_U] = 1;
-            move[s_U] = "U";
-            parent[s_U] = u;
-            enqueue(q, U);
-        }
-        if (!visited[s_F]){
-            visited[s_F] = 1;
-            move[s_F] = "F";
-            parent[s_F] = u;
-            enqueue(q, F);
-        }
-        if (!visited[s_R1]){
-            visited[s_R1] = 1;
-            move[s_R1] = "R'";
-            parent[s_R1] = u;
-            enqueue(q, R1);
-        }
-        if (!visited[s_U1]){
-            visited[s_U1] = 1;
-            move[s_U1] = "U'";
-            parent[s_U1] = u;
-            enqueue(q, U1);
-        }
-        if (!visited[s_F1]){
-            visited[s_F1] = 1;
-            move[s_F1] = "F'";
-            parent[s_F1] = u;
-            enqueue(q, F1);
-        }
-        if (!visited[s_R2]){
-            visited[s_R2] = 1;
-            move[s_R2] = "2R";
-            parent[s_R2] = u;
-            enqueue(q, R2);
-        }
-        if (!visited[s_U2]){
-            visited[s_U2] = 1;
-            move[s_U2] = "2U";
-            parent[s_U2] = u;
-            enqueue(q, U2);
-        }
-        if (!visited[s_F2]){
-            visited[s_F2] = 1;
-            move[s_F2] = "2F";
-            parent[s_F2] = u;
-            enqueue(q, F2);
-        }                        
-    }
-    assert(0);
-}
-*/
-vector<string> solve(const cube& s)
-{
-    queue<cube, fact(10)> q;
-    set<long long> visited; // Use a set to store visited configurations as long long integers
-    cube c = s;
-    enqueue(q, c);
-    visited.insert(ord(c));
-
-    unordered_map<long long, cube> parent; // Use unordered_map to store parent configurations
-    unordered_map<long long, string> move; // Use unordered_map to store moves
-
-    while (q.len != 0) {
-        cube u = dequeue(q);
-
-        if (is_solved(u)){
-            vector<string> moves;
-            cube t = u;
-            while (!same(s,t)){
-                moves.push_back(move[ord(t)]);
-                t = parent[ord(t)];
-            }
-            reverse(moves.begin(),moves.end());
-            return moves;
-        }
-
         cube R = right(u);
         cube U = up(u);
         cube F = front(u);
@@ -493,62 +392,60 @@ vector<string> solve(const cube& s)
         cube U2 = up2(u);
         cube F2 = front2(u);
 
-        if (visited.find(ord(R)) == visited.end()){
-            visited.insert(ord(R));
-            move[ord(R)] = "R";
-            parent[ord(R)] = u;
+        int uni_R = ord(R) ;
+        int uni_U = ord(U) ;
+        int uni_F = ord(F) ;
+        int uni_R1 = ord(R1) ;
+        int uni_U1 = ord(U1) ;
+        int uni_F1 = ord(F1) ;
+        int uni_R2 = ord(R2) ;
+        int uni_U2 = ord(U2) ;
+        int uni_F2 = ord(F2) ;
+
+        if (!hash_function(uni_R,R).visited){
+            hash_table[uni_R].push_back(cube_det{u, "R", 1,uni_R,R}) ;
             enqueue(q, R);
         }
-        if (visited.find(ord(U)) == visited.end()){
-            visited.insert(ord(U));
-            move[ord(U)] = "U";
-            parent[ord(U)] = u;
+
+        if (!hash_function(uni_U,U).visited){
+            hash_table[uni_U].push_back(cube_det{u, "U", 1,uni_U,U}) ;
             enqueue(q, U);
         }
-        if (visited.find(ord(F)) == visited.end()){
-            visited.insert(ord(F));
-            move[ord(F)] = "F";
-            parent[ord(F)] = u;
+
+        if (!hash_function(uni_F,F).visited){
+            hash_table[uni_F].push_back(cube_det{u, "F", 1,uni_F,F}) ;
             enqueue(q, F);
         }
-        if (visited.find(ord(R1)) == visited.end()){
-            visited.insert(ord(R1));
-            move[ord(R1)] = "R'";
-            parent[ord(R1)] = u;
+
+        if (!hash_function(uni_R1,R1).visited){
+            hash_table[uni_R1].push_back(cube_det{u, "R'", 1,uni_R1,R1}) ;
             enqueue(q, R1);
         }
-        if (visited.find(ord(U1)) == visited.end()){
-            visited.insert(ord(U1));
-            move[ord(U1)] = "U'";
-            parent[ord(U1)] = u;
+
+        if (!hash_function(uni_U1,U1).visited){
+            hash_table[uni_U1].push_back(cube_det{u, "U'", 1,uni_U1,U1}) ;
             enqueue(q, U1);
         }
-        if (visited.find(ord(F1)) == visited.end()){
-            visited.insert(ord(F1));
-            move[ord(F1)] = "F'";
-            parent[ord(F1)] = u;
+
+        if (!hash_function(uni_F1,F1).visited){
+            hash_table[uni_F1].push_back(cube_det{u, "F'", 1,uni_F1,F1}) ;
             enqueue(q, F1);
         }
-        if (visited.find(ord(R2)) == visited.end()){
-            visited.insert(ord(R2));
-            move[ord(R2)] = "2R";
-            parent[ord(R2)] = u;
+        if (!hash_function(uni_R2,R2).visited){
+            hash_table[uni_R2].push_back(cube_det{u, "2R", 1,uni_R2,R2}) ;
             enqueue(q, R2);
         }
-        if (visited.find(ord(U2)) == visited.end()){
-            visited.insert(ord(U2));
-            move[ord(U2)] = "2U";
-            parent[ord(U2)] = u;
+        if (!hash_function(uni_U2,U2).visited){
+            hash_table[uni_U2].push_back(cube_det{u, "2U", 1,uni_U2,U2}) ;
             enqueue(q, U2);
         }
-        if (visited.find(ord(F2)) == visited.end()){
-            visited.insert(ord(F2));
-            move[ord(F2)] = "2F";
-            parent[ord(F2)] = u;
+        if (!hash_function(uni_F2,F2).visited){
+            hash_table[uni_F2].push_back(cube_det{u, "2F", 1,uni_F2,F2}) ;
             enqueue(q, F2);
-        }                        
+        }
     }
-    assert(0);
+
+    assert(0) ;
 }
 
 int main()
@@ -575,6 +472,7 @@ int main()
     }
 }
 
+// solved configuration
 /*
 R
 G
@@ -602,6 +500,7 @@ Y
 B
 */
 
+// single step configuration
 /*
 R
 Y
@@ -627,4 +526,32 @@ Y
 O
 Y
 B
+*/
+
+// sample input
+/*
+R
+Y
+G
+B
+Y
+R
+W
+O
+B
+G
+Y
+O
+B
+O
+Y
+R
+G
+W
+W
+G
+O
+B
+R
+W
 */
